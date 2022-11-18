@@ -22,7 +22,7 @@ public class MainMenu implements Screen {
 
     public MainMenu(final TankStars game) {
         this.game = game;
-        backgroundImage = new Texture(Gdx.files.internal("background2.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("armored_by_wojtekfus_dbl2y6q-pre.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
