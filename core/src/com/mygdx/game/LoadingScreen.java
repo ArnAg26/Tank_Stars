@@ -18,7 +18,7 @@ public class LoadingScreen implements Screen {
 
     public LoadingScreen(final TankStars tankStars) {
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("armored_by_wojtekfus_dbl2y6q-pre.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("LoadingScreenBG.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -44,7 +44,6 @@ public class LoadingScreen implements Screen {
         camera.update();
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
-        tankStars.font.setColor(1, 0, 0, 1);
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
         font1.draw(tankStars.batch, "Welcome to Tank Stars!", 200, 340);
         font2.draw(tankStars.batch, "Click anywhere to begin!", 300, 240);

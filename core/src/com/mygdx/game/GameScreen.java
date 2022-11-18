@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -17,23 +19,18 @@ public class GameScreen implements Screen{
     private TextureRegion backgroundTexture;
     OrthographicCamera camera;
 
+
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("background3.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("GameScreenBG.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
 
-
-    @Override
-    public void show() {
-
-    }
-
     @Override
     public void render(float delta) {
-//        FileHandle in = new FileHandle("font.otf");
+
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -43,21 +40,21 @@ public class GameScreen implements Screen{
         BitmapFont font1 = generator.generateFont(parameter);
         BitmapFont font2 = generator.generateFont(parameter2);
 
+
+
         camera.update();
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
-        tankStars.font.setColor(1, 0, 0, 1);
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
-        font1.draw(tankStars.batch, "xxxxxx!", 200, 340);
-        font2.draw(tankStars.batch, "Click anywhere to begin!", 300, 240);
+        font1.draw(tankStars.batch, "Game Screen!", 200, 340);
+        font2.draw(tankStars.batch, "lol!", 300, 240);
         generator.dispose();
         tankStars.batch.end();
 
+    }
 
-        if (Gdx.input.isTouched()) {
-            tankStars.setScreen(new MainMenu(tankStars));
-            dispose();
-        }
+    @Override
+    public void show() {
 
     }
 

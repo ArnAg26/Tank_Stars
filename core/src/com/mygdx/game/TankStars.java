@@ -7,13 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class TankStars extends Game {
 	SpriteBatch batch;
-	BitmapFont font;
-	Texture img;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		font = new BitmapFont();
 		this.setScreen(new LoadingScreen(this));
 	}
 
