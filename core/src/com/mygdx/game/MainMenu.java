@@ -44,7 +44,7 @@ public class MainMenu implements Screen{
                 tankStars.setScreen(new GameScreen(tankStars));
             }
             else if(xtouch >= (load_game_button.getX()-283.098) && xtouch <= (load_game_button.getX() + load_game_button.getWidth() - 342.219) && ytouch >= (load_game_button.getY()-68.039) && ytouch <= (load_game_button.getY() + load_game_button.getHeight())-123.446){
-                //load game
+                tankStars.setScreen(new SavedGames(tankStars));
             }
             else if(xtouch >= (exit_button.getX()-219.445) && xtouch <= ((exit_button.getX() + exit_button.getWidth()) - 271) && ytouch >= (exit_button.getY()-73.033) && ytouch <= (exit_button.getY() + exit_button.getHeight())-119.149){
                 Gdx.app.exit();

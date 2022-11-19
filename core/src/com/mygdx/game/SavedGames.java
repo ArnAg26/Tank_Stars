@@ -1,8 +1,8 @@
 package com.mygdx.game;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -15,24 +15,30 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.Vector;
 
-public class GameScreen implements Screen{
+public class SavedGames implements Screen{
 
     final TankStars tankStars;
     private Texture backgroundImage;
     private TextureRegion backgroundTexture;
-    Sprite pauseButton = null;
-    SpriteBatch batch1 = null;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
-    private State state = State.RUN;
+    Sprite backButton = null;
+    Sprite emptyButton1 = null;
+    Sprite emptyButton2 = null;
+    Sprite emptyButton3 = null;
+    SpriteBatch batch1 = null;
 
-
-    public GameScreen(final TankStars tankStars){
+    public SavedGames(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("GameScreenBG.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("MainMenuBG.png"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
+    }
+
+    @Override
+    public void show() {
+
     }
 
     void touchHandle() {
@@ -41,14 +47,11 @@ public class GameScreen implements Screen{
             camera.unproject(temp);
             float xtouch = temp.x;
             float ytouch = temp.y;
-            System.out.println(temp.x + " lo: " + (pauseButton.getX() - 283.098) + " hi: " + ((pauseButton.getX() + pauseButton.getWidth()) - 342.219));
-            System.out.println(" " + temp.y + " lo:" + (pauseButton.getY() - 68.039) + " hi: " + ((pauseButton.getY() + pauseButton.getHeight()) - 123.446));
+            System.out.println(temp.x + " lo: " + (backButton.getX() - 283.098) + " hi: " + ((backButton.getX() + backButton.getWidth()) - 342.219));
+            System.out.println(" " + temp.y + " lo:" + (backButton.getY() - 68.039) + " hi: " + ((backButton.getY() + backButton.getHeight()) - 123.446));
 
             if (xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
-                pause();
-            }
-            if (state.equals(State.PAUSE) && xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
-                resume();
+                tankStars.setScreen(new MainMenu(tankStars));
             }
         }
     }
@@ -57,56 +60,48 @@ public class GameScreen implements Screen{
     public void render(float delta) {
 
         batch1 = new SpriteBatch();
-        pauseButton = new Sprite(new Texture("pause_button.png"));
-        pauseButton.setSize(70,70);
-        pauseButton.setPosition(28,678);
-//        pauseButton.setColor(1,0,0,1);
+        backButton = new Sprite(new Texture("back_button.png"));
+        backButton.setSize(100, 100);
+        backButton.setPosition(38,648);
+
+        emptyButton1 = new Sprite(new Texture("empty_button.png"));
+        emptyButton1.setSize(500,100);
+        emptyButton1.setPosition(500,150);
+
+        emptyButton2 = new Sprite(new Texture("empty_button.png"));
+        emptyButton2.setSize(500,100);
+        emptyButton2.setPosition(500,300);
+
+        emptyButton3 = new Sprite(new Texture("empty_button.png"));
+        emptyButton3.setSize(500,100);
+        emptyButton3.setPosition(500,450);
+
 
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter2 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 40;
-        parameter2.size = 20;
+        parameter.color = new Color(1111);
         BitmapFont font1 = generator.generateFont(parameter);
-        BitmapFont font2 = generator.generateFont(parameter2);
-
 
         camera.update();
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
-//        font1.draw(tankStars.batch, "Game Screen!", 200, 340);
-//        font2.draw(tankStars.batch, "lol!", 300, 240);
+        font1.draw(tankStars.batch, "Load Game", 323, 433);
         generator.dispose();
         tankStars.batch.end();
 
         batch1.begin();
-        pauseButton.draw(batch1);
+        backButton.draw(batch1);
+        emptyButton1.draw(batch1);
+        emptyButton2.draw(batch1);
+        emptyButton3.draw(batch1);
         batch1.end();
 
-        switch (state)
-        {
-            case RUN:
-                for(int i = 0; i < 10000; i++){
-                    System.out.println(1);
-                }
-                break;
-            case PAUSE:
-                pause();
-                break;
-            case RESUME:
-                resume();
-                break;
 
-            default:
-                break;
-        }
 
-    }
-
-    @Override
-    public void show() {
+        touchHandle();
 
     }
 
@@ -116,26 +111,13 @@ public class GameScreen implements Screen{
     }
 
 
-    public enum State
-    {
-        PAUSE,
-        RUN,
-        RESUME,
-    }
-
-    public void setGameState(State s){
-        this.state = s;
-    }
     @Override
     public void pause() {
-        this.state = State.PAUSE;
     }
 
     @Override
     public void resume() {
-        this.state = State.RUN;
     }
-
 
     @Override
     public void hide() {

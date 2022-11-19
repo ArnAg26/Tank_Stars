@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class LoadingScreen implements Screen {
-
     final TankStars tankStars;
     private Texture backgroundImage;
     private TextureRegion backgroundTexture;
