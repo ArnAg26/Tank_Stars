@@ -17,4 +17,8 @@ public class Tank implements Serializable {
     }
 
 
+    private void ChooseProjectile(){};
+    public void makeMove(){};
+
+
 }
