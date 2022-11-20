@@ -24,7 +24,7 @@ public class MainMenu implements Screen{
     public MainMenu(final TankStars tankStars) {
         this.tankStars = tankStars;
 
-        backgroundImage = new Texture(Gdx.files.internal("MainMenuBG.png"));
+        backgroundImage = new Texture(Gdx.files.internal("arise_by_bisbiswas_ddwcnjg-pre.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1192, 670);
 
         camera = new OrthographicCamera();

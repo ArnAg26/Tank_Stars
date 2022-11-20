@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.awt.*;
 import java.util.Vector;
 
 public class GameScreen implements Screen{
@@ -29,7 +30,7 @@ public class GameScreen implements Screen{
 
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("GameScreenBG.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("tops_and_cracks_by_joeyjazz_dd1g8fd-pre.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -102,6 +103,8 @@ public class GameScreen implements Screen{
             default:
                 break;
         }
+
+//        Window pause = new Window("Pause", skin);
 
     }
 

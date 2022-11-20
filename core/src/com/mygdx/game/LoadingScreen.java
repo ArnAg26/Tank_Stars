@@ -30,7 +30,6 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-//        FileHandle in = new FileHandle("font.otf");
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();

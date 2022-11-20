@@ -30,7 +30,7 @@ public class SavedGames implements Screen{
 
     public SavedGames(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("MainMenuBG.png"));
+        backgroundImage = new Texture(Gdx.files.internal("above_the_gemstone_valley_by_joeyjazz_dd2x2f3-pre.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -98,8 +98,6 @@ public class SavedGames implements Screen{
         emptyButton2.draw(batch1);
         emptyButton3.draw(batch1);
         batch1.end();
-
-
 
         touchHandle();
 
