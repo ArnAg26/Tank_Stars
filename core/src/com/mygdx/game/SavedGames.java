@@ -30,7 +30,7 @@ public class SavedGames implements Screen{
 
     public SavedGames(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("above_the_gemstone_valley_by_joeyjazz_dd2x2f3-pre.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("among_trees___under_the_cliff_by_freya_passifolle_de2faw8-pre.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -66,29 +66,29 @@ public class SavedGames implements Screen{
 
         emptyButton1 = new Sprite(new Texture("empty_button.png"));
         emptyButton1.setSize(500,100);
-        emptyButton1.setPosition(500,150);
+        emptyButton1.setPosition(450,150);
 
         emptyButton2 = new Sprite(new Texture("empty_button.png"));
         emptyButton2.setSize(500,100);
-        emptyButton2.setPosition(500,300);
+        emptyButton2.setPosition(450,300);
 
         emptyButton3 = new Sprite(new Texture("empty_button.png"));
         emptyButton3.setSize(500,100);
-        emptyButton3.setPosition(500,450);
+        emptyButton3.setPosition(450,450);
 
 
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 40;
-        parameter.color = new Color(1111);
+        parameter.color = new Color(0,0,0,1);
         BitmapFont font1 = generator.generateFont(parameter);
 
         camera.update();
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
-        font1.draw(tankStars.batch, "Load Game", 323, 433);
+        font1.draw(tankStars.batch, "Load Game", 300, 433);
         generator.dispose();
         tankStars.batch.end();
 

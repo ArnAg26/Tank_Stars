@@ -22,6 +22,11 @@ public class GameScreen implements Screen{
     private Texture backgroundImage;
     private TextureRegion backgroundTexture;
     Sprite pauseButton = null;
+    Sprite terrain;
+    Sprite tank1;
+    Sprite tank2;
+    Sprite health1;
+    Sprite health2;
     SpriteBatch batch1 = null;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
@@ -30,7 +35,7 @@ public class GameScreen implements Screen{
 
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("tops_and_cracks_by_joeyjazz_dd1g8fd-pre.jpg"));
+        backgroundImage = new Texture(Gdx.files.internal("background.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -63,27 +68,46 @@ public class GameScreen implements Screen{
         pauseButton.setPosition(28,678);
 //        pauseButton.setColor(1,0,0,1);
 
+        terrain = new Sprite(new Texture("terrain_blue.png"));
+        terrain.setPosition(0,0);
+        terrain.setSize(1400,300);
+
+        tank1 = new Sprite(new Texture("mark_revert.png"));
+        tank1.setPosition(800,160);
+        tank1.setSize(150,100);
+
+        tank2 = new Sprite(new Texture("siedge.gif"));
+        tank2.setPosition(50,175);
+        tank2.setSize(120,100);
+
+        health1 = new Sprite(new Texture("health1.png"));
+        health1.setPosition(450,705);
+        health1.setSize(200,50);
+
+        health2 = new Sprite(new Texture("health2.png"));
+        health2.setPosition(750,700);
+        health2.setSize(200,50);
+
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter2 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 40;
         parameter2.size = 20;
-        BitmapFont font1 = generator.generateFont(parameter);
-        BitmapFont font2 = generator.generateFont(parameter2);
-
 
         camera.update();
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
-//        font1.draw(tankStars.batch, "Game Screen!", 200, 340);
-//        font2.draw(tankStars.batch, "lol!", 300, 240);
         generator.dispose();
         tankStars.batch.end();
-
         batch1.begin();
+        tank1.draw(batch1);
+        health1.draw(batch1);
+        health2.draw(batch1);
+        tank2.draw(batch1);
         pauseButton.draw(batch1);
+        terrain.draw(batch1);
         batch1.end();
 
         switch (state)

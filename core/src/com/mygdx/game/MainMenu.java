@@ -26,7 +26,8 @@ public class MainMenu implements Screen{
     Sprite load_game_button;
     Sprite exit_button;
     Sprite bg;
-    Sprite bg1;
+    Sprite player1;
+    Sprite player2;
     Sprite coalition, coalition2;
     Sprite mark, mark2;
     Sprite siedge, siedge2;
@@ -103,28 +104,36 @@ public class MainMenu implements Screen{
         bg.setSize(700,1000);
 
         coalition = new Sprite(new Texture("coalition.gif"));
-        coalition.setPosition(100,500);
+        coalition.setPosition(100,450);
         coalition.setSize(250,200);
 
         mark = new Sprite(new Texture("mark.gif"));
-        mark.setPosition(400,500);
+        mark.setPosition(400,450);
         mark.setSize(300,150);
 
         siedge = new Sprite(new Texture("siedge.gif"));
-        siedge.setPosition(750,500);
+        siedge.setPosition(750,450);
         siedge.setSize(300,175);
 
         coalition2 = new Sprite(new Texture("coalition.gif"));
-        coalition2.setPosition(100,150);
+        coalition2.setPosition(100,100);
         coalition2.setSize(250,200);
 
         mark2 = new Sprite(new Texture("mark.gif"));
-        mark2.setPosition(400,150);
+        mark2.setPosition(400,100);
         mark2.setSize(300,150);
 
         siedge2 = new Sprite(new Texture("siedge.gif"));
-        siedge2.setPosition(750,150);
+        siedge2.setPosition(750,100);
         siedge2.setSize(300,175);
+
+        player1 = new Sprite(new Texture("player1.png"));
+        player1.setPosition(400,575);
+        player1.setSize(300,175);
+
+        player2 = new Sprite(new Texture("player2.png"));
+        player2.setPosition(400,200);
+        player2.setSize(300,175);
 
         batch2.begin();
         bg.draw(batch2);
@@ -137,6 +146,8 @@ public class MainMenu implements Screen{
         coalition2.draw(batch2);
         mark2.draw(batch2);
         siedge2.draw(batch2);
+        player1.draw(batch2);
+        player2.draw(batch2);
         batch2.end();
 
         touchHandle();
