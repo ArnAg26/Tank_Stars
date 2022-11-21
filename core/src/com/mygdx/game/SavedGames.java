@@ -100,7 +100,7 @@ public class SavedGames implements Screen{
         batch1.end();
 
         touchHandle();
-
+        dispose();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class SavedGames implements Screen{
 
     @Override
     public void dispose() {
-
+        batch1.dispose();
     }
 
 }

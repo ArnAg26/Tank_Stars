@@ -2,12 +2,17 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision._btMprSupport_t;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MainMenu implements Screen{
@@ -15,16 +20,24 @@ public class MainMenu implements Screen{
     OrthographicCamera camera;
     private TextureRegion backgroundTexture;
     private Texture backgroundImage;
+    private float width;
+    private float height;
     Sprite next_button;
     Sprite load_game_button;
     Sprite exit_button;
+    Sprite bg;
+    Sprite bg1;
+    Sprite coalition, coalition2;
+    Sprite mark, mark2;
+    Sprite siedge, siedge2;
     SpriteBatch batch2;
     Vector3 temp = new Vector3();
 
     public MainMenu(final TankStars tankStars) {
         this.tankStars = tankStars;
-
-        backgroundImage = new Texture(Gdx.files.internal("arise_by_bisbiswas_ddwcnjg-pre.jpg"));
+        this.width = (float) Gdx.graphics.getWidth();
+        this.height = (float) Gdx.graphics.getHeight();
+        backgroundImage = new Texture(Gdx.files.internal("a439b065333621.5af0ea8ca23f5.png"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1192, 670);
 
         camera = new OrthographicCamera();
@@ -37,18 +50,20 @@ public class MainMenu implements Screen{
             camera.unproject(temp);
             float xtouch = temp.x;
             float ytouch = temp.y;
-            System.out.println(temp.x + " lo: " + (load_game_button.getX()-283.098) +" hi: " + ((load_game_button.getX() + load_game_button.getWidth())-342.219));
-            System.out.println(" " + temp.y + " lo:" + (load_game_button.getY()-68.039) + " hi: " + ((load_game_button.getY() + load_game_button.getHeight())-123.446));
-
-            if(xtouch >= (next_button.getX()-351.111) && xtouch <= (next_button.getX() + next_button.getWidth() - 403.333) && ytouch >= (next_button.getY()-71.799) && ytouch <= (next_button.getY() + next_button.getHeight())-117.905){
+            System.out.println(temp.y);
+            System.out.println(height);
+            if(xtouch >= width/2.02 && xtouch <= width/1.89 && ytouch >= height/2.23 && ytouch <= height/1.94){
                 tankStars.setScreen(new GameScreen(tankStars));
             }
-            else if(xtouch >= (load_game_button.getX()-283.098) && xtouch <= (load_game_button.getX() + load_game_button.getWidth() - 342.219) && ytouch >= (load_game_button.getY()-68.039) && ytouch <= (load_game_button.getY() + load_game_button.getHeight())-123.446){
+
+            if(xtouch >= width/2.02 && xtouch <= width/1.89 && ytouch >= height/3.48 && ytouch <= height/2.78){
                 tankStars.setScreen(new SavedGames(tankStars));
             }
-            else if(xtouch >= (exit_button.getX()-219.445) && xtouch <= ((exit_button.getX() + exit_button.getWidth()) - 271) && ytouch >= (exit_button.getY()-73.033) && ytouch <= (exit_button.getY() + exit_button.getHeight())-119.149){
+
+            if(xtouch >= width/2.02 && xtouch <= width/1.89 && ytouch >= height/8.07 && ytouch <= height/5.17){
                 Gdx.app.exit();
             }
+
         }
     }
 
@@ -69,27 +84,63 @@ public class MainMenu implements Screen{
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
         tankStars.batch.end();
 
+
         next_button = new Sprite(new Texture("next_button.png"));
         batch2 = new SpriteBatch();
-        next_button.setPosition(800, 200);
+        next_button.setPosition(1200, 550);
         next_button.setSize(100,100);
 
         load_game_button = new Sprite(new Texture("load_game.png"));
-        load_game_button.setPosition(650, 195);
+        load_game_button.setPosition(1200, 350);
         load_game_button.setSize(110,110);
 
         exit_button = new Sprite(new Texture("exit_button.png"));
-        batch2 = new SpriteBatch();
-        exit_button.setPosition(500, 200);
+        exit_button.setPosition(1210, 150);
         exit_button.setSize(100,100);
 
+        bg = new Sprite(new Texture("bg.jpg"));
+        bg.setPosition(1100, 0);
+        bg.setSize(700,1000);
+
+        coalition = new Sprite(new Texture("coalition.gif"));
+        coalition.setPosition(100,500);
+        coalition.setSize(250,200);
+
+        mark = new Sprite(new Texture("mark.gif"));
+        mark.setPosition(400,500);
+        mark.setSize(300,150);
+
+        siedge = new Sprite(new Texture("siedge.gif"));
+        siedge.setPosition(750,500);
+        siedge.setSize(300,175);
+
+        coalition2 = new Sprite(new Texture("coalition.gif"));
+        coalition2.setPosition(100,150);
+        coalition2.setSize(250,200);
+
+        mark2 = new Sprite(new Texture("mark.gif"));
+        mark2.setPosition(400,150);
+        mark2.setSize(300,150);
+
+        siedge2 = new Sprite(new Texture("siedge.gif"));
+        siedge2.setPosition(750,150);
+        siedge2.setSize(300,175);
+
         batch2.begin();
+        bg.draw(batch2);
         next_button.draw(batch2);
         load_game_button.draw(batch2);
         exit_button.draw(batch2);
+        coalition.draw(batch2);
+        mark.draw(batch2);
+        siedge.draw(batch2);
+        coalition2.draw(batch2);
+        mark2.draw(batch2);
+        siedge2.draw(batch2);
         batch2.end();
 
         touchHandle();
+        dispose();
     }
 
     @Override
@@ -115,5 +166,5 @@ public class MainMenu implements Screen{
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {batch2.dispose();}
 }
