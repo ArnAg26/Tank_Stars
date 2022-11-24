@@ -27,6 +27,7 @@ public class GameScreen implements Screen{
     Sprite tank2;
     Sprite health1;
     Sprite health2;
+    Sprite tankStarslogo;
     SpriteBatch batch1 = null;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
@@ -86,7 +87,11 @@ public class GameScreen implements Screen{
 
         health2 = new Sprite(new Texture("health2.png"));
         health2.setPosition(750,700);
-        health2.setSize(200,50);
+        health2.setSize(200,45);
+
+        tankStarslogo = new Sprite(new Texture("8424b063914833.Y3JvcCw4MTAsNjM0LDAsMA.png"));
+        tankStarslogo.setPosition(660,690);
+        tankStarslogo.setSize(85,75);
 
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
@@ -108,6 +113,7 @@ public class GameScreen implements Screen{
         tank2.draw(batch1);
         pauseButton.draw(batch1);
         terrain.draw(batch1);
+        tankStarslogo.draw(batch1);
         batch1.end();
 
         switch (state)
