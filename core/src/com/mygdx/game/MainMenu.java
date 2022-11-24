@@ -51,8 +51,8 @@ public class MainMenu implements Screen{
             camera.unproject(temp);
             float xtouch = temp.x;
             float ytouch = temp.y;
-            System.out.println(temp.y);
-            System.out.println(height);
+//            System.out.println(temp.y);
+//            System.out.println(height);
             if(xtouch >= width/2.02 && xtouch <= width/1.89 && ytouch >= height/2.23 && ytouch <= height/1.94){
                 tankStars.setScreen(new GameScreen(tankStars));
             }

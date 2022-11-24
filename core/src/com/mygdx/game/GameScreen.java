@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.awt.*;
+import java.net.PasswordAuthentication;
 import java.util.Vector;
 
 public class GameScreen implements Screen{
@@ -27,7 +28,12 @@ public class GameScreen implements Screen{
     Sprite tank2;
     Sprite health1;
     Sprite health2;
+    Sprite fire_button;
+    Sprite fire_button_circle;
     Sprite tankStarslogo;
+    Sprite left_arrow;
+    Sprite right_arrow;
+    Sprite angle;
     SpriteBatch batch1 = null;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
@@ -37,7 +43,7 @@ public class GameScreen implements Screen{
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
         backgroundImage = new Texture(Gdx.files.internal("background.jpg"));
-        backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
+        backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1920, 1000);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
@@ -48,15 +54,15 @@ public class GameScreen implements Screen{
             camera.unproject(temp);
             float xtouch = temp.x;
             float ytouch = temp.y;
-            System.out.println(temp.x + " lo: " + (pauseButton.getX() - 283.098) + " hi: " + ((pauseButton.getX() + pauseButton.getWidth()) - 342.219));
-            System.out.println(" " + temp.y + " lo:" + (pauseButton.getY() - 68.039) + " hi: " + ((pauseButton.getY() + pauseButton.getHeight()) - 123.446));
+//            System.out.println(temp.x + " lo: " + (pauseButton.getX() - 283.098) + " hi: " + ((pauseButton.getX() + pauseButton.getWidth()) - 342.219));
+//            System.out.println(" " + temp.y + " lo:" + (pauseButton.getY() - 68.039) + " hi: " + ((pauseButton.getY() + pauseButton.getHeight()) - 123.446));
 
-            if (xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
+            if (xtouch >= 25 && xtouch <= 55.223 && ytouch >= 424.819 && ytouch <= 459.561) {
                 pause();
             }
-            if (state.equals(State.PAUSE) && xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
-                resume();
-            }
+//            if (state.equals(State.PAUSE) && xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
+//                resume();
+//            }
         }
     }
 
@@ -71,14 +77,14 @@ public class GameScreen implements Screen{
 
         terrain = new Sprite(new Texture("terrain_blue.png"));
         terrain.setPosition(0,0);
-        terrain.setSize(1400,300);
+        terrain.setSize(1400,450);
 
         tank1 = new Sprite(new Texture("mark_revert.png"));
-        tank1.setPosition(800,160);
+        tank1.setPosition(750,240);
         tank1.setSize(150,100);
 
         tank2 = new Sprite(new Texture("siedge.gif"));
-        tank2.setPosition(50,175);
+        tank2.setPosition(50,275);
         tank2.setSize(120,100);
 
         health1 = new Sprite(new Texture("health1.png"));
@@ -89,9 +95,26 @@ public class GameScreen implements Screen{
         health2.setPosition(750,700);
         health2.setSize(200,45);
 
-        tankStarslogo = new Sprite(new Texture("8424b063914833.Y3JvcCw4MTAsNjM0LDAsMA.png"));
+        tankStarslogo = new Sprite(new Texture("logo.png"));
         tankStarslogo.setPosition(660,690);
         tankStarslogo.setSize(85,75);
+
+        fire_button = new Sprite(new Texture("fire.png"));
+        fire_button.setPosition(627,20);
+        fire_button.setSize(125,125);
+
+        fire_button_circle = new Sprite(new Texture("circle6.png"));
+        fire_button_circle.setPosition(200,-290);
+        fire_button_circle.setSize(1200,700);
+
+        left_arrow = new Sprite(new Texture("left_arrow.png"));
+        left_arrow.setPosition(75,50);
+        left_arrow.setSize(75,75);
+
+        right_arrow = new Sprite(new Texture("right_arrow.png"));
+        right_arrow.setPosition(200,50);
+        right_arrow.setSize(75,75);
+
 
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
@@ -114,6 +137,10 @@ public class GameScreen implements Screen{
         pauseButton.draw(batch1);
         terrain.draw(batch1);
         tankStarslogo.draw(batch1);
+        fire_button_circle.draw(batch1);
+        fire_button.draw(batch1);
+        left_arrow.draw(batch1);
+        right_arrow.draw(batch1);
         batch1.end();
 
         switch (state)
@@ -133,6 +160,8 @@ public class GameScreen implements Screen{
             default:
                 break;
         }
+
+        touchHandle();
 
 //        Window pause = new Window("Pause", skin);
 
@@ -161,7 +190,7 @@ public class GameScreen implements Screen{
     }
     @Override
     public void pause() {
-        this.state = State.PAUSE;
+        tankStars.setScreen(new PauseMenu(tankStars, this));
     }
 
     @Override
