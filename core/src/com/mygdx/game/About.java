@@ -17,6 +17,7 @@ public class About implements Screen {
     OrthographicCamera camera;
     SpriteBatch batch, batch1;
     Sprite crossButton;
+    Sprite text;
 
     public About(final TankStars tankStars){
         this.tankStars = tankStars;
@@ -42,10 +43,15 @@ public class About implements Screen {
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
         tankStars.batch.end();
 
+        text = new Sprite(new Texture("text4.png"));
+        text.setPosition(250, 200);
+        text.setSize(800,400);
+
         batch1 = new SpriteBatch();
 
         batch1.begin();
 //        crossButton.draw(batch1);
+        text.draw(batch1);
         batch1.end();
 
         touchHandle();
