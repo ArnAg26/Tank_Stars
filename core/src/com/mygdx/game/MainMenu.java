@@ -45,7 +45,7 @@ public class MainMenu implements Screen{
         camera.setToOrtho(false, 800, 480);
     }
 
-    void touchHandle(){
+    private void touchHandle(){
         if(Gdx.input.justTouched()){
             temp.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(temp);

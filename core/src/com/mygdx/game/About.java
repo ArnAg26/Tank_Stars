@@ -7,27 +7,42 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class About implements Screen {
-
+    final PauseMenu pauseScreen;
     final TankStars tankStars;
     private Texture backgroundImage;
     private TextureRegion backgroundTexture;
     OrthographicCamera camera;
-    SpriteBatch batch, batch1;
+    SpriteBatch batch1;
     Sprite crossButton;
     Sprite text;
+    Vector3 temp=new Vector3();
 
-    public About(final TankStars tankStars){
+    public About(final TankStars tankStars, final PauseMenu pauseScreen){
         this.tankStars = tankStars;
+        this.pauseScreen = pauseScreen;
         backgroundImage = new Texture(Gdx.files.internal("about.jpg"));
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 960, 1200);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
 
-    public void touchHandle() {
+    private void touchHandle() {
+        if (Gdx.input.justTouched()) {
+            temp.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(temp);
+            float xtouch = temp.x;
+            float ytouch = temp.y;
+            System.out.println(xtouch);
+            System.out.println(ytouch);
+
+            if (xtouch >= 17.7 && xtouch <= 51.42 && ytouch >= 374 && ytouch <= 462.6) {
+                tankStars.setScreen(pauseScreen);
+            }
+        }
     }
 
 
@@ -47,10 +62,14 @@ public class About implements Screen {
         text.setPosition(250, 200);
         text.setSize(800,400);
 
+        crossButton = new Sprite(new Texture("back.png"));
+        crossButton.setPosition(25, 690);
+        crossButton.setSize(70,70);
+
         batch1 = new SpriteBatch();
 
         batch1.begin();
-//        crossButton.draw(batch1);
+        crossButton.draw(batch1);
         text.draw(batch1);
         batch1.end();
 

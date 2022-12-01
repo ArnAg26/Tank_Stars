@@ -37,7 +37,7 @@ public class PauseMenu implements Screen {
 
     }
 
-    void touchHandle() {
+    private void touchHandle() {
         if (Gdx.input.justTouched()) {
             temp.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(temp);
@@ -51,11 +51,11 @@ public class PauseMenu implements Screen {
             }
 
             if (xtouch >= 328.31 && xtouch <= 478.28 && ytouch >= 227.3 && ytouch <= 284.2) {
-                tankstars.setScreen(new About(tankstars));
+                tankstars.setScreen(new About(tankstars, this));
             }
 
             if (xtouch >= 328.31 && xtouch <= 478.28 && ytouch >= 131.9 && ytouch <= 193.2) {
-                Gdx.app.exit();
+                tankstars.setScreen(new VictoryScreen(tankstars));
             }
         }
     }

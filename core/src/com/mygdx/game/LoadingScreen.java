@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,12 +15,14 @@ public class LoadingScreen implements Screen {
     final TankStars tankStars;
     private Texture backgroundImage;
     private TextureRegion backgroundTexture;
+    Sprite logo;
+    SpriteBatch batch1;
     OrthographicCamera camera;
 
     public LoadingScreen(final TankStars tankStars) {
         this.tankStars = tankStars;
-        backgroundImage = new Texture(Gdx.files.internal("LoadingScreenBG.jpg"));
-        backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1236, 600);
+        backgroundImage = new Texture(Gdx.files.internal("PauseScreenBackground.png"));
+        backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 4500, 2531);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
@@ -26,6 +30,13 @@ public class LoadingScreen implements Screen {
     @Override
     public void show() {
 
+    }
+
+    private void touchHandle(){
+        if (Gdx.input.isTouched()) {
+            tankStars.setScreen(new MainMenu(tankStars));
+            dispose();
+        }
     }
 
     @Override
@@ -43,16 +54,21 @@ public class LoadingScreen implements Screen {
         tankStars.batch.setProjectionMatrix(camera.combined);
         tankStars.batch.begin();
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
-        font1.draw(tankStars.batch, "Welcome to Tank Stars!", 200, 340);
-        font2.draw(tankStars.batch, "Click anywhere to begin!", 300, 240);
+//        font1.draw(tankStars.batch, "Welcome to Tank Stars!", 200, 340);
+//        font2.draw(tankStars.batch, "Click anywhere to begin!", 300, 240);
         generator.dispose();
         tankStars.batch.end();
 
+        logo = new Sprite(new Texture("logo2.png"));
+        logo.setPosition(550, 450);
+        logo.setSize(350,300);
 
-        if (Gdx.input.isTouched()) {
-            tankStars.setScreen(new MainMenu(tankStars));
-            dispose();
-        }
+        batch1 = new SpriteBatch();
+        batch1.begin();
+        logo.draw(batch1);
+        batch1.end();
+
+        touchHandle();
 
     }
 

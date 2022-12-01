@@ -48,7 +48,7 @@ public class GameScreen implements Screen{
         camera.setToOrtho(false, 800, 480);
     }
 
-    void touchHandle() {
+    private void touchHandle() {
         if (Gdx.input.justTouched()) {
             temp.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(temp);
@@ -95,7 +95,7 @@ public class GameScreen implements Screen{
         health2.setPosition(750,700);
         health2.setSize(200,45);
 
-        tankStarslogo = new Sprite(new Texture("logo.png"));
+        tankStarslogo = new Sprite(new Texture("logo2.png"));
         tankStarslogo.setPosition(660,690);
         tankStarslogo.setSize(85,75);
 
@@ -146,9 +146,8 @@ public class GameScreen implements Screen{
         switch (state)
         {
             case RUN:
-                for(int i = 0; i < 10000; i++){
-                    System.out.println(1);
-                }
+//                for(int i = 0; i < 10000; i++){
+//                }
                 break;
             case PAUSE:
                 pause();
