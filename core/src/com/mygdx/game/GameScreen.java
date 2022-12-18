@@ -1,7 +1,7 @@
 package com.mygdx.game;
 
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +10,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.awt.*;
@@ -34,11 +39,20 @@ public class GameScreen implements Screen{
     Sprite left_arrow;
     Sprite right_arrow;
     Sprite angle;
-    SpriteBatch batch1 = null;
+    SpriteBatch batch1;
+    SpriteBatch batch2;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
     private State state = State.RUN;
 
+    private  World world;
+    private Body player, platform, p1, p2, p3;
+    private Box2DDebugRenderer b2dr;
+    private final float SCALE = 2.0f;
+    private final float PPM = 32;
+    Texture terrain_texture;
+    private OrthogonalTiledMapRenderer tmr;
+    private TiledMap map;
 
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
@@ -46,6 +60,17 @@ public class GameScreen implements Screen{
         backgroundTexture = new TextureRegion(backgroundImage, 0, 0, 1920, 1000);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
+        terrain = new Sprite(new Texture("terrain_blue.png"));
+        batch2 = new SpriteBatch();
+
+        world = new World(new Vector2(0, -9.8f), false);
+        b2dr = new Box2DDebugRenderer();
+        player = createBox(10,10,32,32,false);
+        platform = createBox(13,2,415,60,true);
+        p1 = createBox(5,10,32,16,true);
+        terrain_texture = new Texture("terrain_blue.png");
+        map = new TmxMapLoader().load("map1.tmx");
+        tmr = new OrthogonalTiledMapRenderer(map);
     }
 
     private void touchHandle() {
@@ -68,6 +93,7 @@ public class GameScreen implements Screen{
 
     @Override
     public void render(float delta) {
+        update(Gdx.graphics.getDeltaTime());
 
         batch1 = new SpriteBatch();
         pauseButton = new Sprite(new Texture("pause_button.png"));
@@ -75,7 +101,6 @@ public class GameScreen implements Screen{
         pauseButton.setPosition(28,678);
 //        pauseButton.setColor(1,0,0,1);
 
-        terrain = new Sprite(new Texture("terrain_blue.png"));
         terrain.setPosition(0,0);
         terrain.setSize(1400,450);
 
@@ -129,13 +154,13 @@ public class GameScreen implements Screen{
         tankStars.batch.draw(backgroundTexture, 0,0, 800, 480);
         generator.dispose();
         tankStars.batch.end();
+
         batch1.begin();
         tank1.draw(batch1);
         health1.draw(batch1);
         health2.draw(batch1);
         tank2.draw(batch1);
         pauseButton.draw(batch1);
-        terrain.draw(batch1);
         tankStarslogo.draw(batch1);
         fire_button_circle.draw(batch1);
         fire_button.draw(batch1);
@@ -143,27 +168,86 @@ public class GameScreen implements Screen{
         right_arrow.draw(batch1);
         batch1.end();
 
-        switch (state)
-        {
-            case RUN:
-//                for(int i = 0; i < 10000; i++){
-//                }
-                break;
-            case PAUSE:
-                pause();
-                break;
-            case RESUME:
-                resume();
-                break;
+//        batch2.begin();
+//        batch2.draw(terrain_texture, platform.getPosition().x, platform.getPosition().y, 25,9);
+//        batch2.end();
 
-            default:
-                break;
-        }
+//        switch (state)
+//        {
+//            case RUN:
+////                for(int i = 0; i < 10000; i++){
+////                }
+//                break;
+//            case PAUSE:
+//                pause();
+//                break;
+//            case RESUME:
+//                resume();
+//                break;
+//
+//            default:
+//                break;
+//        }
+
+        tmr.render();
+        b2dr.render(world, camera.combined.scl(PPM));
+
+
+
 
         touchHandle();
-
 //        Window pause = new Window("Pause", skin);
 
+    }
+
+    public Body createBox(int x, int y, int width, int height, boolean isStatic){
+        Body body;
+        BodyDef terrain_def = new BodyDef();
+        if(isStatic){
+            terrain_def.type = BodyDef.BodyType.StaticBody;
+        }
+        else{
+            terrain_def.type = BodyDef.BodyType.DynamicBody;
+        }
+
+        terrain_def.position.set(x,y);
+        terrain_def.fixedRotation = true;
+        body = world.createBody(terrain_def);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width/PPM, height/PPM);
+
+        body.createFixture(shape, 1.0f);
+        shape.dispose();
+        return body;
+    }
+
+    public void update(float delta){
+        world.step(1/60f, 6,2);
+        inputUpdate(delta);
+//        cameraUpdate(delta);
+//        tmr.setView(camera);
+        batch2.setProjectionMatrix(camera.combined);
+    }
+
+    public void inputUpdate(float delta){
+        int horizontalForce = 0;
+        int verticalForce = 0;
+
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+            horizontalForce -= 1;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+            horizontalForce += 1;
+        }
+        player.setLinearVelocity(horizontalForce * 200, player.getLinearVelocity().y);
+    }
+
+    public void cameraUpdate(float delta){
+        Vector3 position = camera.position;
+        position.x = player.getPosition().x * PPM;
+        position.y = player.getPosition().y * PPM;
+        camera.position.set(position);
+        camera.update();
     }
 
     @Override
@@ -205,7 +289,12 @@ public class GameScreen implements Screen{
 
     @Override
     public void dispose() {
-
+//        b2dr.dispose();
+//        world.dispose();
+//        batch1.dispose();
+//        batch2.dispose();
+////        tmr.dispose();
+////        map.dispose();
     }
 
 }
