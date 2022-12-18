@@ -5,4 +5,10 @@ public class mark extends Tank{
         super(health, initX, initY);
         
     }
+
+    @Override
+    public Projectile ChooseProjectile() {
+        return null;
+
+    }
 }

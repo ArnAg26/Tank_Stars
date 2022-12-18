@@ -8,4 +8,9 @@ public class siedge extends Tank{
         super(100,0,0);
     }
 
+    @Override
+    public Projectile ChooseProjectile() {
+        return null;
+
+    }
 }
