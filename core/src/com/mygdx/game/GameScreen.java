@@ -10,13 +10,22 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.CircleMapObject;
+import com.badlogic.gdx.maps.objects.PolylineMapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Polyline;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.awt.*;
 import java.net.PasswordAuthentication;
@@ -53,6 +62,9 @@ public class GameScreen implements Screen{
     Texture terrain_texture;
     private OrthogonalTiledMapRenderer tmr;
     private TiledMap map;
+    private TiledMap tm;
+    private OrthogonalTiledMapRenderer tm2;
+    private Hud hud;
 
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
@@ -66,11 +78,31 @@ public class GameScreen implements Screen{
         world = new World(new Vector2(0, -9.8f), false);
         b2dr = new Box2DDebugRenderer();
         player = createBox(10,10,32,32,false);
-        platform = createBox(13,2,415,60,true);
+        //platform = createBox(13,2,415,60,true);
         p1 = createBox(5,10,32,16,true);
         terrain_texture = new Texture("terrain_blue.png");
-        map = new TmxMapLoader().load("map1.tmx");
-        tmr = new OrthogonalTiledMapRenderer(map);
+//        map = new TmxMapLoader().load("map1.tmx");
+//        tmr = new OrthogonalTiledMapRenderer(map);
+
+        tm=new TmxMapLoader().load("arnavkacontribution.tmx");
+        tm2=new OrthogonalTiledMapRenderer(tm);
+        TiledObjectUtil.parseTiledObjectLayer(world,tm.getLayers().get("aa").getObjects());
+        hud=new Hud(tankStars.batch);
+
+//        BodyDef bdef=new BodyDef();
+//        PolygonShape polygonShape=new PolygonShape();
+//        FixtureDef fdef=new FixtureDef();
+//        Body body;
+//        for(MapObject object: tm.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)){
+//            Rectangle poly=((RectangleMapObject) object).getRectangle();
+//            bdef.type=BodyDef.BodyType.StaticBody;
+//            bdef.position.set(poly.getX()+poly.getWidth()/2,poly.getY()+poly.getHeight()/2);
+//            body=world.createBody(bdef);
+//            polygonShape.setAsBox(poly.getWidth()/2, poly.getHeight()/2);
+//            fdef.shape=polygonShape;
+//            body.createFixture(fdef);
+//        }
+
     }
 
     private void touchHandle() {
@@ -155,6 +187,8 @@ public class GameScreen implements Screen{
         generator.dispose();
         tankStars.batch.end();
 
+
+
         batch1.begin();
         tank1.draw(batch1);
         health1.draw(batch1);
@@ -189,8 +223,12 @@ public class GameScreen implements Screen{
 //                break;
 //        }
 
-        tmr.render();
+        //tmr.render();
+        tm2.render();
         b2dr.render(world, camera.combined.scl(PPM));
+        batch2.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
+
 
 
 
@@ -222,11 +260,17 @@ public class GameScreen implements Screen{
     }
 
     public void update(float delta){
+        camera.update();
         world.step(1/60f, 6,2);
         inputUpdate(delta);
+        //tm2.setView(tankStars.batch.getProjectionMatrix(),0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight()/1.5f);
+        tm2.setView(camera);
 //        cameraUpdate(delta);
 //        tmr.setView(camera);
         batch2.setProjectionMatrix(camera.combined);
+
+
+
     }
 
     public void inputUpdate(float delta){
@@ -289,12 +333,14 @@ public class GameScreen implements Screen{
 
     @Override
     public void dispose() {
-//        b2dr.dispose();
-//        world.dispose();
-//        batch1.dispose();
-//        batch2.dispose();
-////        tmr.dispose();
-////        map.dispose();
+        b2dr.dispose();
+        world.dispose();
+        batch1.dispose();
+        batch2.dispose();
+        //tmr.dispose();
+        map.dispose();
+        tm.dispose();
+        tm2.dispose();
     }
 
 }

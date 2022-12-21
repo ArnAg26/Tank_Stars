@@ -40,7 +40,7 @@ public abstract class Tank implements Serializable {
     }
 
     public abstract Projectile ChooseProjectile();
-    public void makeMove(){};
+    public void makeMove(Projectile p){};
 
 
 }
