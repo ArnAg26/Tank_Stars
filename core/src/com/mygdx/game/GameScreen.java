@@ -18,10 +18,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.awt.*;
-import java.net.PasswordAuthentication;
-import java.util.Vector;
-
 public class GameScreen implements Screen{
 
     final TankStars tankStars;
@@ -38,15 +34,22 @@ public class GameScreen implements Screen{
     Sprite tankStarslogo;
     Sprite left_arrow;
     Sprite right_arrow;
-    Sprite angle;
+    Sprite crate;
+    Sprite bomb;
     SpriteBatch batch1;
     SpriteBatch batch2;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
-    private State state = State.RUN;
+
+    int turn = 0;
+    int flag = 1;
+    int shoot_flag = -1;
+    int bomb_flag = -1;
+    boolean setToDelete;
+    boolean alreadyDestroyed;
 
     private  World world;
-    private Body player, platform, p1, p2, p3;
+    Body player, platform, player2, airdrop, projectile, projectile2;
     private Box2DDebugRenderer b2dr;
     private final float SCALE = 2.0f;
     private final float PPM = 32;
@@ -63,13 +66,18 @@ public class GameScreen implements Screen{
         terrain = new Sprite(new Texture("terrain_blue.png"));
         batch2 = new SpriteBatch();
 
-        world = new World(new Vector2(0, -9.8f), false);
+        world = new World(new Vector2(0, -25f), false);
+        world.setContactListener(new myContactManager(this));
         b2dr = new Box2DDebugRenderer();
-        player = createBox(10,10,32,32,false);
-        platform = createBox(13,2,415,60,true);
-        p1 = createBox(5,10,32,16,true);
+
+        player = createBox(20,5,40,32, 5,false);
+        player2 = createBox(2,5,32,32,5,false);
+        platform = createBox(13,2,415,60,1,true);
+        setToDelete = false;
+        alreadyDestroyed = false;
+
         terrain_texture = new Texture("terrain_blue.png");
-        map = new TmxMapLoader().load("map1.tmx");
+        map = new TmxMapLoader().load("tx.tmx");
         tmr = new OrthogonalTiledMapRenderer(map);
     }
 
@@ -105,11 +113,11 @@ public class GameScreen implements Screen{
         terrain.setSize(1400,450);
 
         tank1 = new Sprite(new Texture("mark_revert.png"));
-        tank1.setPosition(750,240);
+        tank1.setPosition(player.getPosition().x*52,200);
         tank1.setSize(150,100);
 
         tank2 = new Sprite(new Texture("siedge.gif"));
-        tank2.setPosition(50,275);
+        tank2.setPosition(player2.getPosition().x*52 - 50,200);
         tank2.setSize(120,100);
 
         health1 = new Sprite(new Texture("health1.png"));
@@ -140,7 +148,6 @@ public class GameScreen implements Screen{
         right_arrow.setPosition(200,50);
         right_arrow.setSize(75,75);
 
-
         ScreenUtils.clear(0, 0, 0, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SeventiesGroovy-owZ7q.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -168,39 +175,68 @@ public class GameScreen implements Screen{
         right_arrow.draw(batch1);
         batch1.end();
 
-//        batch2.begin();
-//        batch2.draw(terrain_texture, platform.getPosition().x, platform.getPosition().y, 25,9);
-//        batch2.end();
+        if((count1 == 4 || count2 == 4) && flag == 1){
+            airdrop = createBox(12,12,28,28,5,false);
+            flag = 0;
+        }
 
-//        switch (state)
-//        {
-//            case RUN:
-////                for(int i = 0; i < 10000; i++){
-////                }
-//                break;
-//            case PAUSE:
-//                pause();
-//                break;
-//            case RESUME:
-//                resume();
-//                break;
-//
-//            default:
-//                break;
-//        }
+        if(flag == 0){
+            crate = new Sprite(new Texture("crate.png"));
+            crate.setPosition(624, airdrop.getPosition().y*51 - 35);
+            crate.setSize(95,95);
+            batch1.begin();
+            crate.draw(batch1);
+            batch1.end();
+        }
+
+        if(shoot_flag == 0){
+//            for(int i=0; i<projectile.getFixtureList().size;i++){
+//                projectile.getFixtureList().get(i).setSensor(true);
+//            }
+            projectile = createBox(player.getPosition().x - (float)1.5, 5,5,5, 10,false);
+            projectile.applyLinearImpulse(-15,13, projectile.getPosition().x, projectile.getPosition().y, true);
+            bomb_flag = 0;
+            shoot_flag = -1;
+        }
+
+        if(bomb_flag == 0){
+            bomb = new Sprite(new Texture("bomb.png"));
+            bomb.setPosition(projectile.getPosition().x*55 + 3,projectile.getPosition().y*50);
+            bomb.setSize(25,25);
+
+            batch1.begin();
+            bomb.draw(batch1);
+            batch1.end();
+        }
+
+        if(shoot_flag == 1){
+            projectile2 = createBox( player2.getPosition().x + (float) 1.5, 6,5,5,10,false);
+            projectile2.applyLinearImpulse(15,13, projectile2.getPosition().x, projectile2.getPosition().y, true);
+            bomb_flag = 1;
+            shoot_flag = -1;
+        }
+
+        if(bomb_flag == 1){
+            bomb = new Sprite(new Texture("bomb.png"));
+            bomb.setPosition(projectile2.getPosition().x*55 + 3,projectile2.getPosition().y*50);
+            bomb.setSize(25,25);
+
+            batch1.begin();
+            bomb.draw(batch1);
+            batch1.end();
+        }
+
+        batch2.begin();
+        batch2.draw(terrain_texture, 0, 0, 25,4);
+        batch2.end();
 
         tmr.render();
         b2dr.render(world, camera.combined.scl(PPM));
-
-
-
-
         touchHandle();
 //        Window pause = new Window("Pause", skin);
-
     }
 
-    public Body createBox(int x, int y, int width, int height, boolean isStatic){
+    public Body createBox(float x, float y, int width, int height, float density, boolean isStatic){
         Body body;
         BodyDef terrain_def = new BodyDef();
         if(isStatic){
@@ -216,30 +252,88 @@ public class GameScreen implements Screen{
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width/PPM, height/PPM);
 
-        body.createFixture(shape, 1.0f);
+        body.createFixture(shape, density).setUserData(body);
         shape.dispose();
         return body;
     }
-
     public void update(float delta){
         world.step(1/60f, 6,2);
+        if(setToDelete && alreadyDestroyed == false){
+            if(bomb_flag == 0){
+                world.destroyBody(projectile);
+                bomb_flag = -1;
+            }
+            if(bomb_flag == 1){
+                world.destroyBody(projectile2);
+                bomb_flag = -1;
+            }
+            alreadyDestroyed = true;
+        }
         inputUpdate(delta);
-//        cameraUpdate(delta);
-//        tmr.setView(camera);
         batch2.setProjectionMatrix(camera.combined);
     }
 
-    public void inputUpdate(float delta){
-        int horizontalForce = 0;
-        int verticalForce = 0;
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            horizontalForce -= 1;
+    public void inputUpdate(float delta){
+        player.setLinearVelocity(0, player.getLinearVelocity().y);
+        player2.setLinearVelocity(0, player2.getLinearVelocity().y);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+            moveleft();
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            horizontalForce += 1;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+            moveright();
         }
-        player.setLinearVelocity(horizontalForce * 200, player.getLinearVelocity().y);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            shoot();
+        }
+
+    }
+    public void shoot(){
+        if(turn == 0){
+            shoot_flag = 0;
+            turn = 1;
+        }
+        else if(turn == 1){
+            shoot_flag = 1;
+            turn = 0;
+        }
+    }
+
+    int count1 = 0;
+    int count2 = 0;
+    public void moveleft(){
+
+        if(turn == 0){
+            if(count1 > 8){
+                return;
+            }
+            player.setLinearVelocity(-75, player.getLinearVelocity().y);
+            count1++;
+        }
+        else if(turn == 1){
+            if(count2 > 8){
+                return;
+            }
+            player2.setLinearVelocity(-75, player2.getLinearVelocity().y);
+            count2++;
+        }
+    }
+
+    public void moveright(){
+        if(turn == 0){
+            if(count1 > 8){
+                return;
+            }
+            player.setLinearVelocity(75, player.getLinearVelocity().y);
+            count1++;
+        }
+        else if(turn == 1) {
+            if(count2 > 8){
+                return;
+            }
+            player2.setLinearVelocity(75, player2.getLinearVelocity().y);
+            count2++;
+        }
     }
 
     public void cameraUpdate(float delta){
@@ -248,6 +342,21 @@ public class GameScreen implements Screen{
         position.y = player.getPosition().y * PPM;
         camera.position.set(position);
         camera.update();
+    }
+
+//    public void destroyBody(Body body){
+//        setToDelete = true;
+//    }
+//
+    public void collisionDetected(){
+        setToDelete = true;
+        alreadyDestroyed = false;
+//        if(bomb_flag == 0){
+//            destroyBody(projectile);
+//        }
+//        if(bomb_flag == 1){
+//            destroyBody(projectile2);
+//        }
     }
 
     @Override
@@ -263,13 +372,10 @@ public class GameScreen implements Screen{
 
     public enum State
     {
-        PAUSE,
-        RUN,
-        RESUME,
+
     }
 
     public void setGameState(State s){
-        this.state = s;
     }
     @Override
     public void pause() {
@@ -278,7 +384,6 @@ public class GameScreen implements Screen{
 
     @Override
     public void resume() {
-        this.state = State.RUN;
     }
 
 
@@ -289,12 +394,12 @@ public class GameScreen implements Screen{
 
     @Override
     public void dispose() {
-//        b2dr.dispose();
-//        world.dispose();
-//        batch1.dispose();
-//        batch2.dispose();
-////        tmr.dispose();
-////        map.dispose();
+        b2dr.dispose();
+        world.dispose();
+        batch1.dispose();
+        batch2.dispose();
+        tmr.dispose();
+        map.dispose();
     }
 
 }
