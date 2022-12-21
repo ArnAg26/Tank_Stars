@@ -54,8 +54,9 @@ public class GameScreen implements Screen{
     private final float SCALE = 2.0f;
     private final float PPM = 32;
     Texture terrain_texture;
-    private OrthogonalTiledMapRenderer tmr;
-    private TiledMap map;
+    private OrthogonalTiledMapRenderer tm2;
+    private TiledMap tm;
+    private Hud hud;
 
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
@@ -77,6 +78,10 @@ public class GameScreen implements Screen{
         alreadyDestroyed = false;
 
         terrain_texture = new Texture("terrain_blue.png");
+        tm=new TmxMapLoader().load("arnavkacontribution.tmx");
+        tm2=new OrthogonalTiledMapRenderer(tm);
+        TiledObjectUtil.parseTiledObjectLayer(world,tm.getLayers().get("aa").getObjects());
+        hud=new Hud(tankStars.batch);
 //        map = new TmxMapLoader().load("tx.tmx");
 //        tmr = new OrthogonalTiledMapRenderer(map);
     }
@@ -228,6 +233,10 @@ public class GameScreen implements Screen{
 
         batch2.begin();
         batch2.draw(terrain_texture, 0, 0, 25,4);
+        tm2.render();
+        b2dr.render(world, camera.combined.scl(PPM));
+        batch2.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
         batch2.end();
 //        tmr.render();
         b2dr.render(world, camera.combined.scl(PPM));
@@ -256,6 +265,7 @@ public class GameScreen implements Screen{
         return body;
     }
     public void update(float delta){
+        camera.update();
         world.step(1/60f, 6,2);
         if(setToDelete && alreadyDestroyed == false){
             if(bomb_flag == 0){
@@ -269,6 +279,9 @@ public class GameScreen implements Screen{
             alreadyDestroyed = true;
         }
         inputUpdate(delta);
+        batch2.setProjectionMatrix(camera.combined);
+
+        tm2.setView(camera);
         batch2.setProjectionMatrix(camera.combined);
     }
 
@@ -397,8 +410,8 @@ public class GameScreen implements Screen{
         world.dispose();
         batch1.dispose();
         batch2.dispose();
-        tmr.dispose();
-        map.dispose();
+        tm.dispose();
+        tm2.dispose();
     }
 
 }
