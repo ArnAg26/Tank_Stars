@@ -1,6 +1,10 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.utils.Null;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 
 import java.io.Serializable;
@@ -12,7 +16,21 @@ public class TankGame implements Serializable {
     //LocalDateTime
     private int noOfMoves=0;
 
-    void serialize(){};
+    public static int noOfSavedgames=0;
+
+    void serialize() throws IOException {
+        ObjectOutputStream o=null;
+        try{
+            String p=Integer.toString(noOfSavedgames);
+            p="src/newObjectFile"+p+".txt";
+            o=new ObjectOutputStream(new FileOutputStream(p));
+            o.writeObject(this);
+            this.noOfSavedgames++;
+        }
+        finally{
+            o.close();
+        }
+    }
     private int calculateDamage(){
         return 0;
     };

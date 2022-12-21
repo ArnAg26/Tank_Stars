@@ -18,7 +18,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class GameScreen implements Screen{
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class GameScreen implements Screen,Serializable{
+
+    TankGame tankGame;
 
     final TankStars tankStars;
     private Texture backgroundImage;
@@ -37,7 +44,6 @@ public class GameScreen implements Screen{
     Sprite crate;
     Sprite bomb;
     SpriteBatch batch1;
-    SpriteBatch batch2;
     OrthographicCamera camera;
     Vector3 temp = new Vector3();
 
@@ -45,8 +51,14 @@ public class GameScreen implements Screen{
     int flag = 1;
     int shoot_flag = -1;
     int bomb_flag = -1;
+    boolean deleteBomb;
     boolean setToDelete;
     boolean alreadyDestroyed;
+    boolean deleteAirdrop;
+    boolean isAirDropDeleted;
+    boolean isBombDeleted;
+    int angle;
+    int angle2;
 
     private  World world;
     Body player, platform, player2, airdrop, projectile, projectile2;
@@ -58,6 +70,7 @@ public class GameScreen implements Screen{
     private TiledMap tm;
     private Hud hud;
 
+
     public GameScreen(final TankStars tankStars){
         this.tankStars = tankStars;
         backgroundImage = new Texture(Gdx.files.internal("background.jpg"));
@@ -65,25 +78,25 @@ public class GameScreen implements Screen{
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         terrain = new Sprite(new Texture("terrain_blue.png"));
-        batch2 = new SpriteBatch();
+        batch1 = new SpriteBatch();
 
-        world = new World(new Vector2(0, -25f), false);
+        world = new World(new Vector2(0, -500), false);
         world.setContactListener(new myContactManager(this));
         b2dr = new Box2DDebugRenderer();
 
-        player = createBox(20,5,40,32, 5,false);
-        player2 = createBox(2,5,32,32,5,false);
-        platform = createBox(13,2,415,60,1,true);
+        player = createBox(20,5,40,32, 2,false, "box");
+        player2 = createBox(2,5,40,32,2,false, "box");
+//        platform = createBox(13,2,415,60,1,true);
         setToDelete = false;
         alreadyDestroyed = false;
 
         terrain_texture = new Texture("terrain_blue.png");
-        tm=new TmxMapLoader().load("arnavkacontribution.tmx");
+        tm=new TmxMapLoader().load("anubhav_ka_terrain.tmx");
         tm2=new OrthogonalTiledMapRenderer(tm);
         TiledObjectUtil.parseTiledObjectLayer(world,tm.getLayers().get("aa").getObjects());
         hud=new Hud(tankStars.batch);
-//        map = new TmxMapLoader().load("tx.tmx");
-//        tmr = new OrthogonalTiledMapRenderer(map);
+        ;
+
     }
 
     private void touchHandle() {
@@ -92,15 +105,12 @@ public class GameScreen implements Screen{
             camera.unproject(temp);
             float xtouch = temp.x;
             float ytouch = temp.y;
-//            System.out.println(temp.x + " lo: " + (pauseButton.getX() - 283.098) + " hi: " + ((pauseButton.getX() + pauseButton.getWidth()) - 342.219));
-//            System.out.println(" " + temp.y + " lo:" + (pauseButton.getY() - 68.039) + " hi: " + ((pauseButton.getY() + pauseButton.getHeight()) - 123.446));
+
+//            System.out.println(temp.y);
 
             if (xtouch >= 25 && xtouch <= 55.223 && ytouch >= 424.819 && ytouch <= 459.561) {
                 pause();
             }
-//            if (state.equals(State.PAUSE) && xtouch >= 25 && xtouch <= 72.223 && ytouch >= 403.819 && ytouch <= 459.561) {
-//                resume();
-//            }
         }
     }
 
@@ -118,11 +128,11 @@ public class GameScreen implements Screen{
         terrain.setSize(1400,450);
 
         tank1 = new Sprite(new Texture("mark_revert.png"));
-        tank1.setPosition(player.getPosition().x*52,200);
+        tank1.setPosition(player.getPosition().x*52,player.getPosition().y*40);
         tank1.setSize(150,100);
 
         tank2 = new Sprite(new Texture("siedge.gif"));
-        tank2.setPosition(player2.getPosition().x*52 - 50,200);
+        tank2.setPosition(player2.getPosition().x*50 - 40,player.getPosition().y*40);
         tank2.setSize(120,100);
 
         health1 = new Sprite(new Texture("health1.png"));
@@ -181,7 +191,7 @@ public class GameScreen implements Screen{
         batch1.end();
 
         if((count1 == 4 || count2 == 4) && flag == 1){
-            airdrop = createBox(12,12,28,28,5,false);
+            airdrop = createBox(12,12,28,28,3f,false, "box");
             flag = 0;
         }
 
@@ -198,8 +208,8 @@ public class GameScreen implements Screen{
 //            for(int i=0; i<projectile.getFixtureList().size;i++){
 //                projectile.getFixtureList().get(i).setSensor(true);
 //            }
-            projectile = createBox(player.getPosition().x - (float)1.5, 5,5,5, 10,false);
-            projectile.applyLinearImpulse(-15,13, projectile.getPosition().x, projectile.getPosition().y, true);
+            projectile = createBox(player.getPosition().x - (float)2, (float) 5.5,5,5, 50,false, "circle");
+            projectile.applyLinearImpulse(-60*angle/5,60*angle/5, projectile.getPosition().x, projectile.getPosition().y, true);
             bomb_flag = 0;
             shoot_flag = -1;
         }
@@ -215,8 +225,8 @@ public class GameScreen implements Screen{
         }
 
         if(shoot_flag == 1){
-            projectile2 = createBox( player2.getPosition().x + (float) 1.5, 6,5,5,10,false);
-            projectile2.applyLinearImpulse(15,13, projectile2.getPosition().x, projectile2.getPosition().y, true);
+            projectile2 = createBox( player2.getPosition().x + (float) 2, 6,5,5,50,false, "circle");
+            projectile2.applyLinearImpulse(60*angle2/5,60*angle2/5, projectile2.getPosition().x, projectile2.getPosition().y, true);
             bomb_flag = 1;
             shoot_flag = -1;
         }
@@ -231,20 +241,20 @@ public class GameScreen implements Screen{
             batch1.end();
         }
 
-        batch2.begin();
-        batch2.draw(terrain_texture, 0, 0, 25,4);
+        batch1.begin();
+//        batch1.draw(terrain_texture, 0, 0, 25,4);
         tm2.render();
         b2dr.render(world, camera.combined.scl(PPM));
-        batch2.setProjectionMatrix(hud.stage.getCamera().combined);
+        batch1.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
-        batch2.end();
+        batch1.end();
 //        tmr.render();
         b2dr.render(world, camera.combined.scl(PPM));
         touchHandle();
 //        Window pause = new Window("Pause", skin);
     }
 
-    public Body createBox(float x, float y, int width, int height, float density, boolean isStatic){
+    public Body createBox(float x, float y, int width, int height, float density, boolean isStatic, String type){
         Body body;
         BodyDef terrain_def = new BodyDef();
         if(isStatic){
@@ -257,16 +267,33 @@ public class GameScreen implements Screen{
         terrain_def.position.set(x,y);
         terrain_def.fixedRotation = true;
         body = world.createBody(terrain_def);
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width/PPM, height/PPM);
 
-        body.createFixture(shape, density).setUserData(body);
-        shape.dispose();
+        if(type.equals("box")){
+            PolygonShape shape = new PolygonShape();
+            shape.setAsBox(width/PPM, height/PPM);
+            body.createFixture(shape, density).setUserData(body);
+            shape.dispose();
+        }
+        else{
+            CircleShape shape = new CircleShape();
+            shape.setRadius((float)0.25);
+            body.createFixture(shape, density).setUserData(body);
+            shape.dispose();
+        }
+
+
         return body;
     }
     public void update(float delta){
         camera.update();
+        hud.moveLabel1.setText(String.format("Moves left    %02d",hud.moves1));
+        hud.moveLabel2.setText(String.format("Moves left    %02d",hud.moves2));
+        hud.scoreLabel1.setText(String.format("Health   %04d",hud.health1));
+        hud.scoreLabel2.setText(String.format("Health   %04d",hud.health2));
+        hud.anglelabel1.setText(String.format("Angle  %02d",hud.angle2));
+        hud.anglelabel2.setText(String.format("Angle  %02d",hud.angle1));
         world.step(1/60f, 6,2);
+
         if(setToDelete && alreadyDestroyed == false){
             if(bomb_flag == 0){
                 world.destroyBody(projectile);
@@ -278,11 +305,51 @@ public class GameScreen implements Screen{
             }
             alreadyDestroyed = true;
         }
+        if(deleteAirdrop && isAirDropDeleted == false){
+            world.destroyBody(airdrop);
+            flag = -1;
+            isAirDropDeleted = true;
+        }
+
+        if(bomb_flag == 0){
+            System.out.println(bomb.getY());
+            if(bomb.getY() <= 260){
+                world.destroyBody(projectile);
+                bomb_flag = -1;
+            }
+        }
+        if(bomb_flag == 1){
+            if(bomb.getY() <= 260){
+                world.destroyBody(projectile2);
+                bomb_flag = -1;
+            }
+        }
+
+        if(turn == 0){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+                hud.angle1 += 5;
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+                hud.angle1 -= 5;
+            }
+            angle = hud.angle1;
+        }
+        if(turn == 1){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+                hud.angle2 += 5;
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+                hud.angle2 -= 5;
+            }
+            angle2 = hud.angle1;
+        }
+
+
         inputUpdate(delta);
-        batch2.setProjectionMatrix(camera.combined);
+        batch1.setProjectionMatrix(camera.combined);
 
         tm2.setView(camera);
-        batch2.setProjectionMatrix(camera.combined);
+        batch1.setProjectionMatrix(camera.combined);
     }
 
 
@@ -321,6 +388,7 @@ public class GameScreen implements Screen{
             }
             player.setLinearVelocity(-75, player.getLinearVelocity().y);
             count1++;
+            hud.moves2--;
         }
         else if(turn == 1){
             if(count2 > 8){
@@ -328,23 +396,26 @@ public class GameScreen implements Screen{
             }
             player2.setLinearVelocity(-75, player2.getLinearVelocity().y);
             count2++;
+            hud.moves1--;
         }
     }
 
     public void moveright(){
         if(turn == 0){
-            if(count1 > 8){
+            if(count1 > 9){
                 return;
             }
             player.setLinearVelocity(75, player.getLinearVelocity().y);
             count1++;
+            hud.moves2--;
         }
         else if(turn == 1) {
-            if(count2 > 8){
+            if(count2 > 9){
                 return;
             }
             player2.setLinearVelocity(75, player2.getLinearVelocity().y);
             count2++;
+            hud.moves1--;
         }
     }
 
@@ -360,17 +431,39 @@ public class GameScreen implements Screen{
 //        setToDelete = true;
 //    }
 //
-    public void collisionDetected(){
-        setToDelete = true;
-        alreadyDestroyed = false;
-//        if(bomb_flag == 0){
-//            destroyBody(projectile);
-//        }
-//        if(bomb_flag == 1){
-//            destroyBody(projectile2);
-//        }
+public void collisionDetected(){
+    setToDelete = true;
+    alreadyDestroyed = false;
+    if(turn==0){
+        int d=20;
+        //int d=damage incurred based on projectile position
+        hud.health2-=d;
+        if(hud.health2==0){
+            tankStars.setScreen(new VictoryScreen(tankStars));
+        }
     }
-
+    else if(turn==1){
+        int d=20;
+        //int d=damage incurred based on projectile position
+        hud.health1-=d;
+        if(hud.health1==0){
+            tankStars.setScreen(new VictoryScreen(tankStars));
+        }
+    }
+}
+    public void collectAirDrop(){
+        if(turn==0){
+            hud.health2+=40;
+            hud.moves2+=4;
+            count1 -= 4;
+        }
+        else if(turn==1){
+            hud.health1+=30;
+            hud.moves1+=4;
+            count2 -= 4;
+        }
+        deleteAirdrop = true;
+    }
     @Override
     public void show() {
 
@@ -391,7 +484,7 @@ public class GameScreen implements Screen{
     }
     @Override
     public void pause() {
-        tankStars.setScreen(new PauseMenu(tankStars, this));
+        tankStars.setScreen(PauseMenu.getInstance(tankStars,this));
     }
 
     @Override
@@ -409,7 +502,6 @@ public class GameScreen implements Screen{
         b2dr.dispose();
         world.dispose();
         batch1.dispose();
-        batch2.dispose();
         tm.dispose();
         tm2.dispose();
     }

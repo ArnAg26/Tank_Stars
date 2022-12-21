@@ -24,7 +24,7 @@ public class TiledObjectUtil {
             BodyDef bdef=new BodyDef();
             bdef.type=BodyDef.BodyType.StaticBody;
             body=world.createBody(bdef);
-            body.createFixture(shape,1.1f);
+            body.createFixture(shape,1f);
             shape.dispose();
 
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class VictoryScreen implements Screen {
@@ -20,6 +21,7 @@ public class VictoryScreen implements Screen {
     Sprite restart_button;
     Sprite quit_button;
     Sprite text;
+    Vector3 temp=new Vector3();
 
     public VictoryScreen(final TankStars tankStars){
         this.tankStars = tankStars;
@@ -30,6 +32,20 @@ public class VictoryScreen implements Screen {
     }
 
     private void touchHandle() {
+        if (Gdx.input.justTouched()) {
+            temp.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(temp);
+            float xtouch = temp.x;
+            float ytouch = temp.y;
+            System.out.println(temp.x);
+            System.out.println(temp.y);
+            if (xtouch >= 328.31 && xtouch <= 441.7 && ytouch >= 244 && ytouch <= 292) {
+                tankStars.setScreen(new GameScreen(tankStars));
+            }
+            if (xtouch >= 328.31 && xtouch <= 438.28 && ytouch >= 148 && ytouch <= 196) {
+                Gdx.app.exit();
+            }
+        }
     }
 
 

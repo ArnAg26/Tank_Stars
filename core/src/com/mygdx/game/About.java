@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.PauseableThread;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class About implements Screen {
@@ -20,8 +21,16 @@ public class About implements Screen {
     Sprite crossButton;
     Sprite text;
     Vector3 temp=new Vector3();
+    private static About about;
 
-    public About(final TankStars tankStars, final PauseMenu pauseScreen){
+    public static About getInstance(TankStars tankStars, PauseMenu pauseScreen){
+        if(about ==null){
+            about=new About(tankStars,pauseScreen);
+        }
+        return about;
+
+    }
+    private About(final TankStars tankStars, final PauseMenu pauseScreen){
         this.tankStars = tankStars;
         this.pauseScreen = pauseScreen;
         backgroundImage = new Texture(Gdx.files.internal("about.jpg"));
