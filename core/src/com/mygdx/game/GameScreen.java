@@ -77,8 +77,8 @@ public class GameScreen implements Screen{
         alreadyDestroyed = false;
 
         terrain_texture = new Texture("terrain_blue.png");
-        map = new TmxMapLoader().load("tx.tmx");
-        tmr = new OrthogonalTiledMapRenderer(map);
+//        map = new TmxMapLoader().load("tx.tmx");
+//        tmr = new OrthogonalTiledMapRenderer(map);
     }
 
     private void touchHandle() {
@@ -229,8 +229,7 @@ public class GameScreen implements Screen{
         batch2.begin();
         batch2.draw(terrain_texture, 0, 0, 25,4);
         batch2.end();
-
-        tmr.render();
+//        tmr.render();
         b2dr.render(world, camera.combined.scl(PPM));
         touchHandle();
 //        Window pause = new Window("Pause", skin);
