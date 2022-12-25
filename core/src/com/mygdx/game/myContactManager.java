@@ -24,6 +24,9 @@ public class myContactManager implements ContactListener{
         if(isCollision(a,b)){
             gameScreen.collisionDetected();
         }
+        if(CollectAirDrop(a,b)){
+            gameScreen.collectAirDrop();
+        }
     }
 
     public void endContact(Contact contact){
@@ -38,17 +41,44 @@ public class myContactManager implements ContactListener{
 
     }
 
-    public boolean isCollision(Fixture a, Fixture b){
-        System.out.println(a.getDensity());
-        System.out.println(b.getDensity());
-        if(a.getDensity() == 10 && b.getDensity() == 5){
+    public boolean CollectAirDrop(Fixture a,Fixture b){
+        if(a.getDensity()==2 && b.getDensity()==3){
             return true;
         }
-        else if(a.getDensity() == 5 && b.getDensity() == 10){
+        else if(a.getDensity()==3 && b.getDensity()==2){
             return true;
         }
         else{
             return false;
         }
+    }
+
+    public boolean isCollision(Fixture a, Fixture b){
+        System.out.println(a.getDensity());
+        System.out.println(b.getDensity());
+        if(a.getDensity() == 50 && b.getDensity() == 2){
+            return true;
+        }
+        else if(a.getDensity() == 2 && b.getDensity() == 50){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean isCollisionWithGround(Fixture a, Fixture b){
+        System.out.println(a.getDensity());
+        System.out.println(b.getDensity());
+        if(a.getDensity() == 50 && b.getDensity() != 2){
+            return true;
+        }
+        else if(a.getDensity() != 2 && b.getDensity() == 50){
+            return true;
+        }
+        else{
+            return false;
+        }
+
     }
 }

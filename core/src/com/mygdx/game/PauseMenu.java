@@ -10,6 +10,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 public class PauseMenu implements Screen {
     final TankStars tankstars;
     final GameScreen gameScreen;
@@ -19,11 +24,20 @@ public class PauseMenu implements Screen {
     SpriteBatch batch1;
     Sprite resumeButton;
     Sprite aboutButton;
+    Sprite save;
     Sprite quitButton;
     OrthographicCamera camera;
     Vector3 temp=new Vector3();
+    private static PauseMenu pausemenu;
 
-    public PauseMenu(TankStars tankstars, GameScreen gameScreen) {
+    public static PauseMenu getInstance(TankStars tankstars,GameScreen gs){
+        if(pausemenu==null){
+            pausemenu=new PauseMenu(tankstars,gs);
+        }
+        return pausemenu;
+    }
+
+    private PauseMenu(TankStars tankstars, GameScreen gameScreen) {
         this.tankstars = tankstars;
         this.gameScreen = gameScreen;
         this.backgroundImage = new Texture(Gdx.files.internal("background1.jpg"));
@@ -51,11 +65,17 @@ public class PauseMenu implements Screen {
             }
 
             if (xtouch >= 328.31 && xtouch <= 478.28 && ytouch >= 227.3 && ytouch <= 284.2) {
-                tankstars.setScreen(new About(tankstars, this));
+                tankstars.setScreen(About.getInstance(tankstars,this));
             }
 
             if (xtouch >= 328.31 && xtouch <= 478.28 && ytouch >= 131.9 && ytouch <= 193.2) {
-                tankstars.setScreen(new VictoryScreen(tankstars));
+                tankstars.setScreen(new MainMenu(tankstars));
+            }
+
+            if (xtouch >= 334.2 && xtouch <= 470.85 && ytouch >= 55.12 && ytouch <= 102.8) {
+                serialize();
+                tankstars.setScreen(new MainMenu(tankstars));
+
             }
         }
     }
@@ -84,15 +104,35 @@ public class PauseMenu implements Screen {
         quitButton.setPosition(550, 200);
         quitButton.setSize(300,125);
 
+        save = new Sprite(new Texture("save.png"));
+        save.setPosition(160, -200);
+        save.setSize(1100,550);
+
         batch1 = new SpriteBatch();
 
         batch1.begin();
         resumeButton.draw(batch1);
         aboutButton.draw(batch1);
         quitButton.draw(batch1);
+        save.draw(batch1);
         batch1.end();
 
         touchHandle();
+    }
+
+    void serialize() {
+        ObjectOutputStream o=null;
+        try{
+            String p=Integer.toString(TankGame.noOfSavedgames);
+            System.out.println(p);
+            p="newObjectFile"+p+".txt";
+            o=new ObjectOutputStream(new FileOutputStream(p));
+            o.writeObject(gameScreen);
+            TankGame.noOfSavedgames++;
+            o.close();
+        }catch(IOException e){
+            System.out.println(e.getStackTrace());
+        }
     }
 
     @Override
